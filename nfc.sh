@@ -76,7 +76,7 @@ from plugins.c2s_pb2 import ServerData
 from plugins.c2c_pb2 import NFCData
 
 HOST = "0.0.0.0"
-PORT = 5577
+PORT = 5566
 LOG_DIR = "/root/server/logs"
 LOG_FILE = os.path.join(LOG_DIR, "nfcgate_server.log")
 NOTIFY_URL = "https://your-webhook-url.com/notify"  # Replace with your webhook URL
