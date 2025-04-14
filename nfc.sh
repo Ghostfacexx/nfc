@@ -1,3 +1,5 @@
+cd ~/nfc
+cat << 'EOF' > nfc.sh
 #!/bin/bash
 
 # Step 1: Update and upgrade system packages
@@ -49,7 +51,7 @@ protoc --python_out=plugins protocol/protobuf/*.proto || { echo "protoc failed, 
 # Step 11: Ensure logs directory exists
 echo "Ensuring log directory exists..."
 mkdir -p /root/server/logs
-mkdir -p logs  # For server.py logs in /root/server1/logs
+mkdir -p logs  # For server1.py logs in /root/server1/logs
 
 # Step 12: Create server1.py with the specified code
 echo "Creating server1.py..."
@@ -466,7 +468,7 @@ if [ -n "$SERVER_PID" ]; then
     echo "Test server1.py (PID: $SERVER_PID) killed"
 fi
 
-# Step 18: Create server.sh for server.py
+# Step 18: Create server.sh for server1.py
 echo "Creating server.sh..."
 cat << 'INNER_EOF' > /root/server.sh
 #!/bin/bash
@@ -475,19 +477,19 @@ if [ -z "$VIRTUAL_ENV" ]; then
     source /root/nfcrelay-venv/bin/activate
 fi
 
-# Check and kill existing server.py process on port 5566
+# Check and kill existing server1.py process on port 5566
 PORT_CHECK=$(ss -tlnp | grep 5566)
 if [ -n "$PORT_CHECK" ]; then
-    PID=$(ps aux | grep '[s]erver.py' | awk '{print $2}')
+    PID=$(ps aux | grep '[s]erver1.py' | awk '{print $2}')
     if [ -n "$PID" ]; then
         kill -9 $PID
-        echo "Killed existing server.py (PID: $PID)"
+        echo "Killed existing server1.py (PID: $PID)"
     fi
 fi
 
 cd /root/server1
-nohup python3 server.py > logs/server_output.log 2>&1 &
-echo "Started server.py on port 5566"
+nohup python3 server1.py > logs/server1_output.log 2>&1 &
+echo "Started server1.py on port 5566"
 INNER_EOF
 
 # Step 19: Create server1.sh for server1.py
@@ -521,7 +523,7 @@ chmod +x /root/server1.sh
 
 # Step 21: Prompt user to choose which server to launch
 echo "Setup complete. Which server would you like to launch?"
-echo "1) server.sh (port 5566 - server.py)"
+echo "1) server.sh (port 5566 - server1.py)"
 echo "2) server1.sh (port 5566 - server1.py)"
 echo "Note: Both servers use port 5566, so only one can run at a time."
 read -p "Enter 1 or 2: " choice
@@ -529,7 +531,7 @@ read -p "Enter 1 or 2: " choice
 case $choice in
     1)
         /root/server.sh
-        echo "Launched server.sh (server.py on port 5566)"
+        echo "Launched server.sh (server1.py on port 5566)"
         ;;
     2)
         /root/server1.sh
@@ -539,3 +541,4 @@ case $choice in
         echo "Invalid choice. Run ./server.sh or ./server1.sh manually later."
         ;;
 esac
+EOF
