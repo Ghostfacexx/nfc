@@ -1,3 +1,4 @@
+cat << 'EOF' > nfc.sh
 #!/bin/bash
 
 # Step 1: Update and upgrade system packages
@@ -53,7 +54,7 @@ mkdir -p logs  # For server.py logs in /root/server1/logs
 
 # Step 12: Create server1.py with the specified code
 echo "Creating server1.py..."
-cat << 'EOF' > /root/server1/server1.py
+cat << 'INNER_EOF' > /root/server1/server1.py
 #!/usr/bin/env python3
 import argparse
 import socket
@@ -79,7 +80,7 @@ HOST = "0.0.0.0"
 PORT = 5566
 LOG_DIR = "/root/server/logs"
 LOG_FILE = os.path.join(LOG_DIR, "nfcgate_server.log")
-NOTIFY_URL = "https://your-webhook-url.com/notify"  # Replace with your webhook URL
+NOTIFY_URL = "http://localhost"  # Replaced placeholder webhook URL
 
 if not os.path.exists(LOG_DIR):
     os.makedirs(LOG_DIR)
@@ -438,7 +439,7 @@ def main():
 
 if __name__ == "__main__":
     main()
-EOF
+INNER_EOF
 
 # Step 13: Make server1.py executable
 echo "Making server1.py executable..."
@@ -448,27 +449,27 @@ chmod +x /root/server1/server1.py
 echo "Verifying server1.py creation..."
 ls -l /root/server1/server1.py || { echo "Failed to create server1.py"; exit 1; }
 
-# Step 15: Test server.py on port 5566
-echo "Starting server.py for testing on port 5566..."
-nohup python3 server.py > logs/server_output.log 2>&1 &
+# Step 15: Test server1.py on port 5566
+echo "Starting server1.py for testing on port 5566..."
+nohup python3 server1.py > logs/server1_output.log 2>&1 &
 SERVER_PID=$!
 sleep 2  # Give it time to start
 
-# Step 16: Verify server.py is running
-echo "Testing server.py on port 5566..."
+# Step 16: Verify server1.py is running
+echo "Testing server1.py on port 5566..."
 ss -tlnp | grep 5566 || echo "Port 5566 not listening"
-ps aux | grep '[s]erver.py'
+ps aux | grep '[s]erver1.py'
 
 # Step 17: Kill the test server
-echo "Killing test server.py..."
+echo "Killing test server1.py..."
 if [ -n "$SERVER_PID" ]; then
     kill -9 $SERVER_PID
-    echo "Test server.py (PID: $SERVER_PID) killed"
+    echo "Test server1.py (PID: $SERVER_PID) killed"
 fi
 
 # Step 18: Create server.sh for server.py
 echo "Creating server.sh..."
-cat << 'EOF' > /root/server.sh
+cat << 'INNER_EOF' > /root/server.sh
 #!/bin/bash
 if [ -z "$VIRTUAL_ENV" ]; then
     echo "Activating virtual environment..."
@@ -488,11 +489,11 @@ fi
 cd /root/server1
 nohup python3 server.py > logs/server_output.log 2>&1 &
 echo "Started server.py on port 5566"
-EOF
+INNER_EOF
 
 # Step 19: Create server1.sh for server1.py
 echo "Creating server1.sh..."
-cat << 'EOF' > /root/server1.sh
+cat << 'INNER_EOF' > /root/server1.sh
 #!/bin/bash
 if [ -z "$VIRTUAL_ENV" ]; then
     echo "Activating virtual environment..."
@@ -512,7 +513,7 @@ fi
 cd /root/server1
 nohup python3 server1.py > logs/server1_output.log 2>&1 &
 echo "Started server1.py on port 5566"
-EOF
+INNER_EOF
 
 # Step 20: Make scripts executable
 echo "Making scripts executable..."
@@ -539,3 +540,4 @@ case $choice in
         echo "Invalid choice. Run ./server.sh or ./server1.sh manually later."
         ;;
 esac
+EOF
