@@ -1,4 +1,3 @@
-cat << 'EOF' > nfc.sh
 #!/bin/bash
 
 # Step 1: Update and upgrade system packages
@@ -540,4 +539,3 @@ case $choice in
         echo "Invalid choice. Run ./server.sh or ./server1.sh manually later."
         ;;
 esac
-EOF
