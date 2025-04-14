@@ -3,6 +3,7 @@
 # Step 1: Update and upgrade system packages
 echo "Updating and upgrading system..."
 sudo apt update && sudo apt upgrade -y
+sudo add-apt-repository ppa:deadsnakes/ppa
 
 # Step 2: Install required system packages
 echo "Installing system packages..."
