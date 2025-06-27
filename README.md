@@ -1,3 +1,5 @@
+download https://github.com/Ghostfacexx/nfc/blob/main/nfc1.tar.gz
+
 sudo tar -xzf nfc1.tar.gz -C /
 
 cd server1
